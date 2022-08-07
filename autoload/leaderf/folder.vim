@@ -1,35 +1,34 @@
-function! leaderf#folder#source(args) abort "{{{
-    return split(system('fd -t directory -I'), '\n')
-endfunction "}}}
+if leaderf#versionCheck() == 0
+    finish
+endif
 
-function! leaderf#folder#accept(line, args) abort "{{{
-    let l:path = fnameescape(a:line)
+exec g:Lf_py "import vim, sys, os.path"
+exec g:Lf_py "cwd = vim.eval('expand(\"<sfile>:p:h\")')"
+exec g:Lf_py "sys.path.insert(0, os.path.join(cwd, 'python'))"
+exec g:Lf_py "from folderExpl import *"
 
-    if exists('g:leaderf#folder#explorer')
-        execute g:leaderf#folder#explorer l:path
-    elseif exists(':Dirbuf') == 2
-        execute 'Dirbuf' l:path
-    elseif exists(':Defx') == 2
-        execute 'Defx' l:path
-    elseif exists(':LeaderfFiler') == 2
-        execute 'LeaderfFiler' l:path
-    elseif exists(':CocCommand') == 2
-        execute 'CocCommand explorer' l:path
-    elseif exists(':Explore') == 2
-        execute 'Explore' l:path
+function! leaderf#Folder#Maps()
+    nmapclear <buffer>
+    nnoremap <buffer> <silent> <CR>          :exec g:Lf_py "folderExplManager.accept()"<CR>
+    nnoremap <buffer> <silent> o             :exec g:Lf_py "folderExplManager.accept()"<CR>
+    nnoremap <buffer> <silent> <2-LeftMouse> :exec g:Lf_py "folderExplManager.accept()"<CR>
+    nnoremap <buffer> <silent> q             :exec g:Lf_py "folderExplManager.quit()"<CR>
+    nnoremap <buffer> <silent> i             :exec g:Lf_py "folderExplManager.input()"<CR>
+    nnoremap <buffer> <silent> <F1>          :exec g:Lf_py "folderExplManager.toggleHelp()"<CR>
+
+    if has_key(g:Lf_NormalMap, "Folder")
+        for i in g:Lf_NormalMap["Folder"]
+            exec 'nnoremap <buffer> <silent> '.i[0].' '.i[1]
+        endfor
+    endif
+endfunction
+
+
+function! leaderf#Folder#managerId()
+    " pyxeval() has bug
+    if g:Lf_PythonVersion == 2
+        return pyeval("id(folderExplManager)")
     else
-        call leaderf#folder#open(l:path)
+        return py3eval("id(folderExplManager)")
     endif
-endfunction "}}}
-
-function! leaderf#folder#open(path) abort "{{{
-    if has('win32')
-        let l:cmd = "!start rundll32 url.dll,FileProtocolHandler"
-    elseif has('mac')
-        let l:cmd = "open"
-    elseif executable('xdg-open')
-        let l:cmd = "xdg-open"
-    endif
-    call system(l:cmd .. a:path)
-endfunction "}}}
-
+endfunction

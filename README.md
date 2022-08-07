@@ -1,9 +1,23 @@
-LeaderF-folder
-================
+# LeaderF-folder
 
-A leaderf source of folder.
+This plugin use [LeaderF](https://github.com/Yggdroot/LeaderF) to open a subfolder.
 
-Dependency
-----------
+## Setup
 
-- [Yggdroot/LeaderF](https://github.com/Yggdroot/LeaderF)
+This plugin takes [Dirbuf](https://github.com/elihunter173/dirbuf.nvim) as the default solution to open the chosen subfolder. You can use the following option to customize it:
+
+```vim
+let g:Lf_FolderAcceptSelectionCmd = 'Dirbuf'
+```
+
+## Usage
+
+```vim
+:LeaderfFolder
+```
+
+Press `F1` to get more help
+
+## LICENSE
+
+MIT
