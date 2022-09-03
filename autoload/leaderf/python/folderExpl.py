@@ -48,9 +48,14 @@ class FolderExplManager(Manager):
     def _acceptSelection(self, *args, **kwargs):
         if len(args) == 0:
             return
+
         cmd = lfEval("g:Lf_FolderAcceptSelectionCmd")
         if cmd == "":
             cmd = "lcd"
+
+        if kwargs.get("mode", '') == 't':
+            lfCmd("tabnew")
+
         lfCmd(cmd + " " + args[0])
 
     def _getDigest(self, line, mode):
@@ -93,6 +98,7 @@ class FolderExplManager(Manager):
     def _createHelp(self):
         help = []
         help.append('" <CR>/<double-click>/o : open the folder under cursor')
+        help.append('" t : open the folder under cursor in a new tab')
         help.append('" i : switch to the input mode')
         help.append('" q : quit')
         help.append('" <F1> : toggle this help')
